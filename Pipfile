@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+pymongo = {extras = ["srv"],version = "*"}
+jupyter = "*"
+python-dotenv = "*"
+pandas = "*"
+matplotlib = "*"
+numpy = "*"
+seaborn = "*"
+plotly = "==4.6.0"
+
+[requires]
+python_version = "3.7"

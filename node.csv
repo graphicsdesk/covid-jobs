@@ -1,0 +1,71 @@
+id,Label,Color
+0,All internships,#7d1a55
+1,Cancelled,#1a4f7d
+2,Continuing,#1a4f7d
+3,10-100,#3b1a7d
+4,100-500,#3b1a7d
+5,500-2000,#3b1a7d
+6,2000+,#3b1a7d
+7,Medical Techonlolgy,#7d1a7d
+8,Marketing,#7d1a7d
+9,Air Transport,#7d1a7d
+10,Consulting,#7d1a7d
+11,Rail Transport,#7d1a7d
+12,Software (System & Application),#7d1a7d
+13,Public Relations,#7d1a7d
+14,Financial Svcs. (Non-bank & Insurance),#7d1a7d
+15,Drugs (Pharmaceutical),#7d1a7d
+16,Retail (Special Lines),#7d1a7d
+17,Healthcare Products,#7d1a7d
+18,Oil/Gas (Production and Exploration),#7d1a7d
+19,Telecom. Equipment,#7d1a7d
+20,Entertainment,#7d1a7d
+21,Insurance (General),#7d1a7d
+22,Computer Services,#7d1a7d
+23,Retail (Distributors),#7d1a7d
+24,Retail (Online),#7d1a7d
+25,Hospitals/Healthcare Facilities,#7d1a7d
+26,Broadcasting,#7d1a7d
+27,Recreation,#7d1a7d
+28,Hotel/Gaming,#7d1a7d
+29,Business & Consumer Services,#7d1a7d
+30,Transportation (Railroads),#7d1a7d
+31,Retail (General),#7d1a7d
+32,Machinery,#7d1a7d
+33,Oil/Gas (Integrated),#7d1a7d
+34,Insurance (Life),#7d1a7d
+35,R.E.I.T.,#7d1a7d
+36,Oilfield Svcs/Equip.,#7d1a7d
+37,Drugs (Biotechnology),#7d1a7d
+38,Retail (Building Supply),#7d1a7d
+39,Food Wholesalers,#7d1a7d
+40,Heathcare Information and Technology,#7d1a7d
+41,Software (Entertainment),#7d1a7d
+42,Electronics (Consumer & Office),#7d1a7d
+43,Diversified,#7d1a7d
+44,Software (Internet),#7d1a7d
+45,Building Materials,#7d1a7d
+46,Investments & Asset Management,#7d1a7d
+47,Telecom. Services,#7d1a7d
+48,Bank (Money Center),#7d1a7d
+49,Aerospace/Defense,#7d1a7d
+50,Construction Supplies,#7d1a7d
+51,Retail (Automotive),#7d1a7d
+52,Banks (Regional),#7d1a7d
+53,Household Products,#7d1a7d
+54,Computers/Peripherals,#7d1a7d
+55,Electronics (General),#7d1a7d
+56,Transportation,#7d1a7d
+57,Auto & Truck,#7d1a7d
+58,Brokerage & Investment Banking,#7d1a7d
+59,Food Processing,#7d1a7d
+60,Healthcare Support Services,#7d1a7d
+61,Trucking,#7d1a7d
+62,Information Services,#7d1a7d
+63,Publishing & Newspapers,#7d1a7d
+64,Semiconductor,#7d1a7d
+65,Beverage (Soft),#7d1a7d
+66,Apparel,#7d1a7d
+67,Telecom (Wireless),#7d1a7d
+68,Chemical (Specialty),#7d1a7d
+69,other,#7d1a7d
