@@ -72,9 +72,11 @@ tab_percent = tab_sum3 %>% group_by(apply_start) %>%
   summarise(percent_remote = ((trues/totals)*100))
 
 
-ggplot(tab_percent, aes(apply_start, percent_remote)) + 
-  geom_col(alpha = 0.3) +  geom_line(aes(y = rollmean(percent_remote, 7, na.pad = TRUE), color = 'black'))
-
+percent_rem <- ggplot(tab_percent, aes(apply_start, percent_remote)) + 
+  geom_col(alpha = 0.3) +  geom_line(aes(y = rollmean(percent_remote, 10, na.pad = TRUE), color = 'black')) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y", expand = c(0, 0)) +
+  scale_color_manual(name = '', values = c('black' = 'black'), labels = c('10-day rolling mean')) +
+  ylab("Percent of remote postings per day")
 
  
 
@@ -219,4 +221,9 @@ before_after_plot <- before_after_plot +  theme(axis.text.x = element_text(angle
 
 #TO DO: should  change the avg cahng graph to a % change 
 
+before_after <- before_after %>% mutate(avg_change_perc = avg_change/avg_before *100)
+
+before_after_per_plot <- ggplot(before_after, aes(x=reorder(employer_industry_name, -avg_change_perc), y=avg_change_perc)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90))
 
