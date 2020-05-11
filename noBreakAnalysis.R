@@ -1,5 +1,3 @@
-
- 
 library(tidyverse) # We need ggplot (for viz) and dplyr (for data wrangling)
 library(dplyr) 
 library(mongolite) # Simple MongoDB client
@@ -28,7 +26,7 @@ postings <- conn$find('{}') %>%
  
 postings %>% 
   # Filter postings to when the scraper has run
-  filter(apply_start > "2019-09-06" & apply_start < "2020-04-19") %>% 
+  filter(apply_start > "2019-09-06" & apply_start < "2020-05-11") %>% 
   
   # Aggregate by apply_start
   count(apply_start) %>% 
@@ -190,40 +188,32 @@ line_rainbow <-  ggplot(datesTall, aes(x = apply_start) )+
   coord_cartesian(ylim=c(0,15))
 line_rainbow 
 
-pop_idus <- postings %>% 
-  group_by(employer_industry_name) %>%
-  summarize(n=n()) 
-pop_idus <- pop_idus %>% arrange(desc(n))
-
-pop_idus_before <- postings %>% 
-  filter(apply_start > "2019-09-06" & apply_start < "2020-3-1") %>%
-  group_by(employer_industry_name) %>%
-  summarize(n_before=n(), avg_before = n()/177) 
-pop_idus_before <- pop_idus_before %>% arrange(desc(n))
-
-pop_idus_after <- postings %>% 
-  filter(apply_start > "2020-3-1" & apply_start < "2020-4-19") %>%
-  group_by(employer_industry_name) %>%
-  summarize(n_after=n(), avg_after = n()/49) 
-pop_idus_after <- pop_idus_after %>% arrange(desc(n))
-
-before_after <- merge(pop_idus_before, pop_idus_after, by= c("employer_industry_name","employer_industry_name" ), all=TRUE)
-
-before_after <- before_after %>% mutate(avg_change = avg_after-avg_before)
-
-before_after <- before_after %>% arrange(desc(avg_change))
-
-before_after_plot <- ggplot(before_after, aes(x=employer_industry_name, y=avg_change)) +
-  geom_col()
-
-before_after_plot <- before_after_plot +  theme(axis.text.x = element_text(angle = 90))
 
 
-#TO DO: should  change the avg cahng graph to a % change 
 
-before_after <- before_after %>% mutate(avg_change_perc = avg_change/avg_before *100)
+lowerBound <- as.Date("2019-9-6")
+split <- as.Date("2020-3-1")
+upperBound <- as.Date("2020-4-28")
 
-before_after_per_plot <- ggplot(before_after, aes(x=reorder(employer_industry_name, -avg_change_perc), y=avg_change_perc)) +
+partitionPostings <- function(start, end) {
+  postings %>% 
+    filter(apply_start > start & apply_start < end) %>%
+    group_by(employer_industry_name) %>%
+    summarize(avg = n()/(as.numeric(end - start)))
+}
+
+before_after <- merge(partitionPostings(lowerBound, split),
+                      partitionPostings(split, upperBound),
+                      by="employer_industry_name",
+                      all=TRUE,
+                      suffixes = c(".before",".after")) %>% 
+  mutate(avg_change = avg.after - avg.before) %>% 
+  arrange(desc(avg_change))
+
+# percentage plot
+before_after %>% 
+  mutate(avg_change_perc = avg_change/avg.before *100) %>% 
+  ggplot(aes(x=reorder(employer_industry_name, -avg_change_perc), y=avg_change_perc)) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 90))
 
