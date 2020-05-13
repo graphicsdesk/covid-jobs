@@ -1,3 +1,5 @@
+
+ 
 library(tidyverse) # We need ggplot (for viz) and dplyr (for data wrangling)
 library(dplyr) 
 library(mongolite) # Simple MongoDB client
@@ -26,7 +28,7 @@ postings <- conn$find('{}') %>%
  
 postings %>% 
   # Filter postings to when the scraper has run
-  filter(apply_start > "2019-09-06" & apply_start < "2020-05-11") %>% 
+  filter(apply_start > "2019-09-06" & apply_start < "2020-04-30") %>% 
   
   # Aggregate by apply_start
   count(apply_start) %>% 
@@ -53,7 +55,7 @@ postings %>%
 
 
 tab_sum2 = postings %>% group_by(apply_start) %>%
-  filter(remote, apply_start > "2019-09-06" & apply_start < "2020-04-19" ) %>%
+  filter(remote, apply_start > "2019-09-06" & apply_start < "2020-04-30" ) %>%
   summarise(trues = n()) 
 
 ggplot(tab_sum2, aes(apply_start, trues)) + 
@@ -61,7 +63,7 @@ ggplot(tab_sum2, aes(apply_start, trues)) +
 
  
 tab_sum = postings %>% group_by(apply_start) %>%
-  filter(apply_start > "2019-09-06" & apply_start < "2020-04-19" ) %>%
+  filter(apply_start > "2019-09-06" & apply_start < "2020-04-30" ) %>%
   summarise(totals = n()) 
 
 tab_sum3 = merge(tab_sum2, tab_sum, by= c("apply_start","apply_start" ))
@@ -118,12 +120,14 @@ for(i in indus_avector){
   p[[i]] <- ggplot(temp, aes(apply_start, count)) + 
     geom_col(alpha = 0.3) +  
     geom_line(aes(y = rollmean(count, 7, na.pad = TRUE), color = 'black')) +
-    ylab(paste("Number of postings per day in ", i))
+    ylab(paste("Number of postings per day in ", i))+
+    scale_x_date(date_breaks = "1 month", date_labels = "%b %Y", expand = c(0, 0)) +
+    scale_color_manual(name = '', values = c('black' = 'black'), labels = c('7-day rolling mean'))
   
   
 }
 
-names(p)
+names(p) 
  
  
 n <- length(p)
@@ -131,8 +135,22 @@ nCol <- floor(sqrt(n))
 #do.call("grid.arrange", c(p, ncol=3))
  
  
-#p
+p['Higher Education']
 
+library(ggpubr)
+
+p['Restaurants & Food Service']
+p['Tourism']
+p['Hotels & Accommodation']
+
+p['Medical Devices']
+p['Healthcare']
+
+p['K-12 Education']
+
+ggarrange(a, b, c,
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
 
  
 
@@ -188,32 +206,78 @@ line_rainbow <-  ggplot(datesTall, aes(x = apply_start) )+
   coord_cartesian(ylim=c(0,15))
 line_rainbow 
 
+pop_idus <- postings %>% 
+  group_by(employer_industry_name) %>%
+  summarize(n=n()) 
+pop_idus <- pop_idus %>% arrange(desc(n))
+
+pop_idus_before <- postings %>% 
+  filter(apply_start > "2019-09-06" & apply_start < "2020-3-1") %>%
+  group_by(employer_industry_name) %>%
+  summarize(n_before=n(), avg_before = n()/177) 
+pop_idus_before <- pop_idus_before %>% arrange(desc(n))
+
+pop_idus_after <- postings %>% 
+  filter(apply_start > "2020-3-1" & apply_start < "2020-4-19") %>%
+  group_by(employer_industry_name) %>%
+  summarize(n_after=n(), avg_after = n()/49) 
+pop_idus_after <- pop_idus_after %>% arrange(desc(n))
+
+before_after <- merge(pop_idus_before, pop_idus_after, by= c("employer_industry_name","employer_industry_name" ), all=TRUE)
+
+before_after <- before_after %>% mutate(avg_change = avg_after-avg_before)
+
+before_after <- before_after %>% arrange(desc(avg_change))
+
+before_after_plot <- ggplot(before_after, aes(x=employer_industry_name, y=avg_change)) +
+  geom_col()
+
+before_after_plot <- before_after_plot +  theme(axis.text.x = element_text(angle = 90))
 
 
+#TO DO: should  change the avg cahng graph to a % change 
 
-lowerBound <- as.Date("2019-9-6")
-split <- as.Date("2020-3-1")
-upperBound <- as.Date("2020-4-28")
+before_after <- before_after %>% mutate(avg_change_perc = avg_change/avg_before *100)
 
-partitionPostings <- function(start, end) {
-  postings %>% 
-    filter(apply_start > start & apply_start < end) %>%
-    group_by(employer_industry_name) %>%
-    summarize(avg = n()/(as.numeric(end - start)))
-}
-
-before_after <- merge(partitionPostings(lowerBound, split),
-                      partitionPostings(split, upperBound),
-                      by="employer_industry_name",
-                      all=TRUE,
-                      suffixes = c(".before",".after")) %>% 
-  mutate(avg_change = avg.after - avg.before) %>% 
-  arrange(desc(avg_change))
-
-# percentage plot
-before_after %>% 
-  mutate(avg_change_perc = avg_change/avg.before *100) %>% 
-  ggplot(aes(x=reorder(employer_industry_name, -avg_change_perc), y=avg_change_perc)) +
+before_after_per_plot <- ggplot(before_after, aes(x=reorder(employer_industry_name, -avg_change_perc), y=avg_change_perc)) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 90))
 
+# remote posting by idusstry
+pop_idu_remote <- postings %>% 
+  filter(remote, apply_start > "2019-09-06" & apply_start < "2020-4-30") %>%
+  group_by(employer_industry_name) %>%
+  summarize(n=n()) 
+
+pop_idus_before_remote <- postings %>% 
+  filter(remote, apply_start > "2019-09-06" & apply_start < "2020-4-30") %>%
+  group_by(employer_industry_name) %>%
+  summarize(n_before=n(), avg_before = n()/177) 
+
+
+pop_idus_after_remote <- postings %>% 
+  filter(remote, apply_start > "2020-3-1" & apply_start < "2020-4-30") %>%
+  group_by(employer_industry_name) %>%
+  summarize(n_after=n(), avg_after = n()/49) 
+
+
+before_after_remote <- merge(pop_idus_before_remote, pop_idus_after_remote, by= c("employer_industry_name","employer_industry_name" ), all=TRUE)
+
+before_afte_remote <- before_after_remote %>% mutate(avg_change = avg_after-avg_before)
+
+before_after_remote  <- before_after_remote %>% arrange(desc(avg_change))
+
+before_after_plot_remote <- ggplot(before_after_remote , aes(x=employer_industry_name, y=avg_change)) +
+  geom_col()
+
+before_after_plot_remote  <- before_after_plot_remote  +  theme(axis.text.x = element_text(angle = 90))
+
+
+
+#TO DO: should  change the avg cahng graph to a % change 
+
+before_after <- before_after %>% mutate(avg_change_perc = avg_change/avg_before *100)
+
+before_after_per_plot <- ggplot(before_after, aes(x=reorder(employer_industry_name, -avg_change_perc), y=avg_change_perc)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90))
